@@ -1,0 +1,17 @@
+# .dockerignore
+
+# Ignorar o ambiente virtual
+venv/
+
+# Ignorar caches do Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignorar arquivos do Git
+.git
+.gitignore
+
+# Ignorar o próprio Dockerfile e arquivos de configuração
+Dockerfile
+.dockerignore

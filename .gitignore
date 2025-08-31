@@ -1,0 +1,25 @@
+# Ambiente Virtual
+venv/
+.venv/
+env/
+
+# Arquivos de Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Arquivos de Cache de Editores
+.vscode/
+.idea/
+
+# Arquivos de Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Notebooks Checkpoints
+.ipynb_checkpoints
+
+# Arquivos gerados
+*.log
+*.tmp
