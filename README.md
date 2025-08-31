@@ -32,11 +32,21 @@ Foram explorados múltiplos arquivos, mas o arquivo `campeonato-brasileiro-full.
 
 Este projeto foi desenvolvido em um **ambiente local(Fedora - Linux)** utilizando **VS Code e Jupyter Notebooks**. A IA generativa **Gemini (Google)** foi utilizada como assistente de programação para acelerar o desenvolvimento, auxiliar na depuração de erros complexos, refatorar código para melhores práticas e para brainstorming de estratégias e arquitetura do projeto.
 
+## ⚙️ CI/CD - Automação e Qualidade
+
+O repositório está configurado com uma pipeline de Integração Contínua (CI) utilizando **GitHub Actions**. A cada `push` ou `pull request` para a branch `main`, o workflow (`.github/workflows/ci-cd.yml`) executa automaticamente os seguintes passos:
+
+1.  **Configuração do Ambiente:** Prepara uma máquina virtual Linux com Python e instala todas as dependências do projeto.
+2.  **Linting de Código:** Utiliza a ferramenta `Ruff` para verificar a qualidade do código, garantindo que ele siga as boas práticas e esteja livre de erros comuns de sintaxe.
+3.  **Teste de Build do Docker:** Executa o comando `docker build` para validar o `Dockerfile`, garantindo que a aplicação pode ser containerizada com sucesso.
+
+Este processo automatizado garante a integridade e a qualidade do código, facilitando a manutenção e futuras implantações.
 
 ## 📂 Estrutura do Projeto
 
 ```
 predictor_fut_br/
+├── .github/          # Arquivos de workflow do GitHub Actions
 ├── api/              # Código da aplicação FastAPI (main.py)
 ├── data/             # Dados brutos e processados
 ├── models/           # Modelo de ML treinado (.joblib)
