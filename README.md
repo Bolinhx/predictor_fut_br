@@ -202,6 +202,5 @@ Esta jornada reforçou aprendizados cruciais:
 
 ## 🔮 Próximos Passos
 
-* **Hyperparameter Tuning:** Otimizar os parâmetros do modelo XGBoost para extrair o máximo de acurácia.
-* **Expandir a API:** Criar novos endpoints, como um que retorne as probabilidades de cada resultado (`/predict_proba`).
-* **Pipeline de CI/CD:** Automatizar os testes e o deployment de novas versões da API usando ferramentas como GitHub Actions.
+* **Infraestrutura como Código (IaC):** Migrar a criação de todos os recursos da AWS (IAM Roles, Buckets, etc.) para uma ferramenta como Terraform ou AWS CDK para garantir a reprodutibilidade da infraestrutura.
+* **Testes Automatizados:** Expandir a pipeline de CI/CD para incluir testes de unidade e integração para a API e para os scripts de ML.
