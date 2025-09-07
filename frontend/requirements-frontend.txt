@@ -1,0 +1,7 @@
+streamlit
+requests
+pandas
+numpy
+boto3
+s3fs
+fsspec
