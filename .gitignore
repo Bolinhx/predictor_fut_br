@@ -23,3 +23,6 @@ Thumbs.db
 # Arquivos gerados
 *.log
 *.tmp
+
+# Pasta de output para testes locais
+ml_jobs/temp_output/

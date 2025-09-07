@@ -1,0 +1,72 @@
+ID,rodata,data,hora,mandante,visitante,formacao_mandante,formacao_visitante,tecnico_mandante,tecnico_visitante,vencedor,arena,mandante_Placar,visitante_Placar,mandante_Estado,visitante_Estado
+8716,32,01/11/2024,20:59,Fluminense,Gremio,4-2-3-1,4-2-3-1,L. Venker de Menezes,Renato Gaúcho,-, Maracanã,2,2,RJ,RS
+8717,32,02/11/2024,16:00,Bragantino,Cuiaba,4-2-3-1,4-1-4-1,F. Seabra,B. Franco,-,Nabizão,0,0,SP,MT
+8719,32,02/11/2024,18:29,Athletico-PR,Vitoria,3-4-2-1,5-4-1,L. González,T. Carpini Barbosa,Vitoria,Ligga Arena,1,2,PR,BA
+8718,32,02/11/2024,18:30,Juventude,Fortaleza,4-2-3-1,3-1-4-2,F. Matias,J. Vojvoda,Fortaleza, Alfredo Jaconi,0,3,RS,CE
+8720,32,04/11/2024,20:03,Corinthians,Palmeiras,3-4-1-2,4-2-3-1,R. Díaz,A. Moreira Ferreira,Corinthians,Neo Química Arena,2,0,SP,SP
+8723,32,05/11/2024,21:30,Botafogo-RJ,Vasco,4-2-3-1,4-2-3-1,A. Torres Gomes Araújo Amorim,C. de Paiva,Botafogo-RJ,Estádio Nilton Santos,3,0,RJ,RJ
+8722,32,05/11/2024,21:31,Internacional,Criciuma,4-2-3-1,4-4-2,R. Machado Marques,C. Tencati,Internacional,Estádio Beira-Rio,2,0,RS,SC
+8721,32,05/11/2024,21:32,Bahia,Sao Paulo,4-2-3-1,4-2-3-1,R. Ceni,L. Zubeldía,Sao Paulo,Arena Fonte Nova,0,3,BA,SP
+8725,32,06/11/2024,21:00,Atletico-GO,Atletico-MG,4-2-3-1,3-4-2-1,A. Gomes,G. Milito,Atletico-GO,Estádio Antônio Accioly - Atlético Goianiense,1,0,GO,MG
+8724,32,06/11/2024,21:01,Cruzeiro,Flamengo,4-2-3-1,4-2-3-1,F. Diniz Silva,F. Luís,Flamengo,Estádio Independência,0,1,MG,RJ
+8726,33,08/11/2024,18:59,Internacional,Fluminense,4-2-3-1,4-2-3-1,R. Machado Marques,L. Venker de Menezes,Internacional,Estádio Beira-Rio,2,0,RS,RJ
+8727,33,08/11/2024,21:30,Palmeiras,Gremio,4-2-3-1,4-2-3-1,A. Moreira Ferreira,Renato Gaúcho,Palmeiras,Allianz Parque,1,0,SP,RS
+8729,33,09/11/2024,16:31,Botafogo-RJ,Cuiaba,4-2-3-1,4-1-4-1,A. Torres Gomes Araújo Amorim,B. Franco,-,Estádio Nilton Santos,0,0,RJ,MT
+8728,33,09/11/2024,16:32,Vitoria,Corinthians,4-2-3-1,4-3-1-2,T. Carpini Barbosa,R. Díaz,Corinthians, Barradão,1,2,BA,SP
+8731,33,09/11/2024,18:59,Juventude,Bahia,4-2-3-1,4-3-3,F. Matias,R. Ceni,Juventude, Alfredo Jaconi,2,1,RS,BA
+8733,33,09/11/2024,18:59,Atletico-GO,Bragantino,4-2-3-1,4-2-3-1,A. Gomes,F. Seabra,-,Estádio Antônio Accioly - Atlético Goianiense,0,0,GO,SP
+8732,33,09/11/2024,19:00,Fortaleza,Vasco,4-2-2-2,4-3-3,J. Vojvoda,C. de Paiva,Fortaleza,Arena Castelão,3,0,CE,RJ
+8730,33,09/11/2024,19:01,Cruzeiro,Criciuma,4-2-3-1,4-2-3-1,F. Diniz Silva,C. Tencati,Cruzeiro, Mineirão,2,1,MG,SC
+8734,33,09/11/2024,21:02,Sao Paulo,Athletico-PR,4-2-3-1,4-3-3,L. Zubeldía,L. González,Sao Paulo,MorumBIS,2,1,SP,PR
+8735,33,13/11/2024,20:00,Flamengo,Atletico-MG,3-4-2-1,3-1-4-2,F. Luís,G. Milito,-, Maracanã,0,0,RJ,MG
+8595,19,16/11/2024,18:30,Athletico-PR,Atletico-MG,4-2-3-1,3-4-2-1,L. González,G. Milito,Athletico-PR,Ligga Arena,1,0,PR,MG
+8736,34,20/11/2024,11:06,Corinthians,Cruzeiro,4-3-1-2,4-2-3-1,R. Díaz,F. Diniz Silva,Corinthians,Neo Química Arena,2,1,SP,MG
+8738,34,20/11/2024,16:29,Athletico-PR,Atletico-GO,4-2-3-1,4-2-3-1,L. González,A. Gomes,Athletico-PR,Ligga Arena,2,0,PR,GO
+8737,34,20/11/2024,16:32,Bragantino,Sao Paulo,4-2-3-1,4-2-3-1,F. Seabra,M. Cuberas,-,Nabizão,1,1,SP,SP
+8739,34,20/11/2024,16:33,Criciuma,Vitoria,4-2-2-2,4-2-3-1,C. Tencati,T. Carpini Barbosa,Vitoria,Estádio Heriberto Hülse,0,1,SC,BA
+8740,34,20/11/2024,18:02,Bahia,Palmeiras,4-3-3,4-2-3-1,R. Ceni,A. Moreira Ferreira,Palmeiras,Arena Fonte Nova,1,2,BA,SP
+8741,34,20/11/2024,19:01,Gremio,Juventude,4-2-2-2,4-2-3-1,Renato Gaúcho,F. Matias,-,Arena do Grêmio,2,2,RS,RS
+8742,34,20/11/2024,19:01,Cuiaba,Flamengo,5-3-2,3-4-2-1,J. Bertazzo Tobar,F. Luís,Flamengo,Arena Pantanal,1,2,MT,RJ
+8743,34,20/11/2024,21:30,Atletico-MG,Botafogo-RJ,3-4-3,4-2-3-1,G. Milito,A. Torres Gomes Araújo Amorim,-,Estádio Independência,0,0,MG,RJ
+8744,34,21/11/2024,20:01,Vasco,Internacional,4-2-3-1,4-2-3-1,C. de Paiva,R. Machado Marques,Internacional,Estádio São Januário,0,1,RJ,RS
+8745,34,22/11/2024,21:30,Fluminense,Fortaleza,4-2-3-1,3-5-2,L. Venker de Menezes,J. Vojvoda,-, Maracanã,2,2,RJ,CE
+8747,35,23/11/2024,19:30,Botafogo-RJ,Vitoria,4-1-3-2,5-3-2,A. Torres Gomes Araújo Amorim,T. Carpini Barbosa,-,Estádio Nilton Santos,1,1,RJ,BA
+8748,35,23/11/2024,19:30,Atletico-GO,Palmeiras,4-2-3-1,4-2-3-1,A. Gomes,A. Moreira Ferreira,Palmeiras,Estádio Antônio Accioly - Atlético Goianiense,0,1,GO,SP
+8746,35,23/11/2024,19:32,Juventude,Cuiaba,4-3-3,3-4-3,F. Matias,B. Franco,-, Alfredo Jaconi,1,1,RS,MT
+8749,35,23/11/2024,21:32,Sao Paulo,Atletico-MG,4-2-3-1,4-3-3,L. Zubeldía,G. Milito,-,MorumBIS,2,2,SP,MG
+8751,35,24/11/2024,16:01,Internacional,Bragantino,4-2-3-1,4-2-3-1,R. Machado Marques,F. Seabra,Internacional,Estádio Beira-Rio,4,1,RS,SP
+8752,35,24/11/2024,16:01,Bahia,Athletico-PR,4-3-3,4-2-3-1,R. Ceni,L. González,-,Arena Fonte Nova,1,1,BA,PR
+8750,35,24/11/2024,16:02,Corinthians,Vasco,4-3-1-2,4-2-3-1,R. Díaz,C. de Paiva,Corinthians,Neo Química Arena,3,1,SP,RJ
+8753,35,26/11/2024,19:00,Fluminense,Criciuma,4-2-3-1,4-3-1-2,L. Venker de Menezes,C. Tencati,-, Maracanã,0,0,RJ,SC
+8754,35,26/11/2024,20:02,Fortaleza,Flamengo,4-2-3-1,4-2-2-2,J. Vojvoda,F. Luís,-,Arena Castelão,0,0,CE,RJ
+8757,36,26/11/2024,21:30,Atletico-MG,Juventude,3-4-2-1,4-3-3,G. Milito,F. Matias,Juventude,Estádio Independência,2,3,MG,RS
+8756,36,26/11/2024,21:31,Palmeiras,Botafogo-RJ,4-2-3-1,4-2-3-1,A. Moreira Ferreira,A. Torres Gomes Araújo Amorim,Botafogo-RJ,Allianz Parque,1,3,SP,RJ
+8755,35,27/11/2024,21:00,Cruzeiro,Gremio,4-2-3-1,4-2-3-1,F. Diniz Silva,Renato Gaúcho,-, Mineirão,1,1,MG,RS
+8759,36,30/11/2024,19:30,Cuiaba,Bahia,4-3-3,4-1-4-1,B. Franco,R. Ceni,Bahia,Arena Pantanal,1,2,MT,BA
+8758,36,30/11/2024,19:34,Criciuma,Corinthians,3-5-2,4-3-1-2,C. Tencati,R. Díaz,Corinthians,Estádio Heriberto Hülse,2,4,SC,SP
+8760,36,30/11/2024,21:31,Vasco,Atletico-GO,4-2-3-1,4-2-3-1,F. Loureiro,A. Gomes,-,Estádio São Januário,2,2,RJ,GO
+8762,36,01/12/2024,16:01,Flamengo,Internacional,4-2-3-1,4-2-3-1,F. Luís,R. Machado Marques,Flamengo, Maracanã,3,2,RJ,RS
+8761,36,01/12/2024,16:02,Gremio,Sao Paulo,4-2-3-1,4-2-3-1,Renato Gaúcho,L. Zubeldía,Gremio,Arena do Grêmio,2,1,RS,SP
+8763,36,01/12/2024,18:30,Bragantino,Cruzeiro,4-2-3-1,4-2-3-1,F. Seabra,F. Diniz Silva,-,Nabizão,1,1,SP,MG
+8764,36,01/12/2024,18:30,Athletico-PR,Fluminense,4-2-3-1,4-2-3-1,L. González,L. Venker de Menezes,-,Ligga Arena,1,1,PR,RJ
+8765,36,01/12/2024,18:31,Vitoria,Fortaleza,5-3-2,4-2-3-1,T. Carpini Barbosa,J. Vojvoda,Vitoria, Barradão,2,0,BA,CE
+8766,37,03/12/2024,20:04,Corinthians,Bahia,4-3-1-2,3-4-1-2,R. Díaz,R. Ceni,Corinthians,Neo Química Arena,3,0,SP,BA
+8767,37,04/12/2024,19:02,Vasco,Atletico-MG,4-1-2-1-2,3-4-3,F. Loureiro,G. Milito,Vasco,Estádio São Januário,2,0,RJ,MG
+8768,37,04/12/2024,20:01,Vitoria,Gremio,5-3-2,4-2-3-1,T. Carpini Barbosa,Renato Gaúcho,-, Barradão,1,1,BA,RS
+8769,37,04/12/2024,20:03,Criciuma,Flamengo,4-3-1-2,4-2-3-1,C. Tencati,F. Luís,Flamengo,Estádio Heriberto Hülse,0,3,SC,RJ
+8770,37,04/12/2024,20:04,Sao Paulo,Juventude,4-2-3-1,4-2-3-1,L. Zubeldía,F. Matias,Juventude,MorumBIS,1,2,SP,RS
+8771,37,04/12/2024,21:30,Atletico-GO,Fortaleza,4-2-3-1,4-2-3-1,A. Gomes,J. Vojvoda,Atletico-GO,Estádio Antônio Accioly - Atlético Goianiense,3,1,GO,CE
+8772,37,04/12/2024,21:30,Internacional,Botafogo-RJ,4-2-2-2,4-2-3-1,R. Machado Marques,A. Torres Gomes Araújo Amorim,Botafogo-RJ,Estádio Beira-Rio,0,1,RS,RJ
+8773,37,04/12/2024,21:30,Cruzeiro,Palmeiras,4-3-2-1,4-2-3-1,F. Diniz Silva,A. Moreira Ferreira,Palmeiras, Mineirão,1,2,MG,SP
+8775,37,05/12/2024,20:00,Athletico-PR,Bragantino,4-2-3-1,4-2-3-1,L. González,F. Seabra,Bragantino,Ligga Arena,1,2,PR,SP
+8774,37,05/12/2024,20:01,Fluminense,Cuiaba,4-2-3-1,4-2-3-1,L. Venker de Menezes,B. Franco,Fluminense, Maracanã,1,0,RJ,MT
+8777,38,08/12/2024,16:04,Juventude,Cruzeiro,4-2-3-1,4-2-3-1,F. Matias,F. Diniz Silva,Cruzeiro, Alfredo Jaconi,0,1,RS,MG
+8778,38,08/12/2024,16:04,Bahia,Atletico-GO,4-2-3-1,4-1-4-1,R. Ceni,A. Gomes,Bahia,Arena Fonte Nova,2,0,BA,GO
+8779,38,08/12/2024,16:04,Flamengo,Vitoria,4-4-2,4-3-3,F. Luís,T. Carpini Barbosa,-, Maracanã,2,2,RJ,BA
+8781,38,08/12/2024,16:04,Atletico-MG,Athletico-PR,4-3-3,4-3-2-1,L. Gonçalves,L. González,Atletico-MG,Arena MRV,1,0,MG,PR
+8782,38,08/12/2024,16:04,Botafogo-RJ,Sao Paulo,,,A. Torres Gomes Araújo Amorim,L. Zubeldía,Botafogo-RJ,Estádio Nilton Santos,2,1,RJ,SP
+8783,38,08/12/2024,16:04,Cuiaba,Vasco,4-3-3,4-3-2-1,B. Franco,F. Loureiro,Vasco,Arena Pantanal,1,2,MT,RJ
+8784,38,08/12/2024,16:04,Palmeiras,Fluminense,4-2-3-1,4-2-3-1,A. Moreira Ferreira,L. Venker de Menezes,Fluminense,Allianz Parque,0,1,SP,RJ
+8776,38,08/12/2024,16:05,Fortaleza,Internacional,4-2-3-1,4-1-2-1-2,J. Vojvoda,R. Machado Marques,Fortaleza,Arena Castelão,3,0,CE,RS
+8780,38,08/12/2024,16:05,Bragantino,Criciuma,4-2-3-1,4-1-2-1-2,F. Seabra,C. Tencati,Bragantino,Nabizão,5,1,SP,SC
+8785,38,08/12/2024,16:05,Gremio,Corinthians,4-4-2,4-3-1-2,Renato Gaúcho,R. Díaz,Corinthians,Arena do Grêmio,0,3,RS,SP

@@ -1,0 +1,6 @@
+pandas
+scikit-learn
+xgboost
+joblib
+pyarrow
+boto3
