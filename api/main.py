@@ -3,16 +3,44 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import joblib
 import pandas as pd
+import boto3
+import os
+import tempfile # Importa a biblioteca de arquivos temporários
+
+# --- LÓGICA DE CARREGAMENTO DO MODELO DO S3 (BLOCO ATUALIZADO E UNIVERSAL) ---
+
+# Define os detalhes do nosso modelo no S3.
+BUCKET_NAME = "predictor-fut-br-data-bolinhx-2025"
+MODEL_FILE_KEY = "models/modelo_final.joblib" # O caminho para o modelo no S3
+
+# Cria um caminho de arquivo temporário que funciona em qualquer sistema operacional
+temp_dir = tempfile.gettempdir()
+LOCAL_MODEL_PATH = os.path.join(temp_dir, "modelo_final.joblib")
+
+print("Iniciando a API... Baixando o modelo mais recente do S3...")
+
+try:
+    # Baixa o modelo do S3 para o caminho temporário correto
+    s3_client = boto3.client('s3')
+    s3_client.download_file(BUCKET_NAME, MODEL_FILE_KEY, LOCAL_MODEL_PATH)
+    print(f"Modelo baixado com sucesso em: {LOCAL_MODEL_PATH}")
+
+    # Carrega o modelo que acabamos de baixar
+    model = joblib.load(LOCAL_MODEL_PATH)
+    print("Modelo carregado com sucesso. API pronta para receber requisições.")
+
+except Exception as e:
+    print(f"ERRO CRÍTICO: Não foi possível carregar o modelo. {e}")
+    model = None
+
+# --- FIM DO BLOCO ATUALIZADO ---
+
 
 # 1. Criar a instância da aplicação FastAPI
 app = FastAPI(title="Futebol BR Predictor API", description="API para prever resultados de jogos do Brasileirão")
 
-# 2. Carregar o nosso modelo treinado
-model = joblib.load('models/fut_br_predictor_model.joblib')
-print("Modelo carregado com sucesso.")
 
 # 3. Definir o formato dos dados de entrada usando Pydantic
-# As features aqui devem ser EXATAMENTE as mesmas que usamos para treinar o modelo
 class MatchFeatures(BaseModel):
     form_gols_feitos_mandante: float
     form_gols_sofridos_mandante: float
@@ -40,6 +68,9 @@ def predict(features: MatchFeatures):
     - **1**: Empate
     - **2**: Vitória do Visitante
     """
+    if model is None:
+        return {"error": "Modelo não está carregado. Verifique os logs da API."}
+        
     # Converter os dados de entrada em um DataFrame do Pandas
     input_df = pd.DataFrame([features.dict()])
 
@@ -60,3 +91,4 @@ def predict(features: MatchFeatures):
 @app.get("/", tags=["Health Check"])
 def read_root():
     return {"status": "API está online e funcionando!"}
+
