@@ -35,14 +35,88 @@ Nesta fase, preparamos o ambiente local e as configurações.
     ```
 
 ## 🏗️ Fase 1: Fundação da Infraestrutura na AWS
-Aqui, criamos os recursos de base que nosso sistema precisará.
+Nesta fase, criamos os recursos de base que nosso sistema precisará para armazenar dados e código. Não vamos rodar nada ainda, apenas preparar o terreno.
 
 1. **IAM - Usuário Programático:**
-   - WIP (Descrever o passo a passo para criar o usuário predictor-project-user com as políticas necessárias)
-2. **S3 - Bucket de Armazenamento:**
-   - WIP (Descrever como criar o bucket S3, habilitar o versionamento e a criptografia, e criar as pastas raw, processed e models).
-3. **ECR - Registro de Contêineres:**
-   - WIP (Descrever como criar os dois repositórios no ECR: prediction-api e ml-jobs).
+   Nunca usamos a conta "root" (principal) para tarefas do dia a dia ou para automação. O primeiro passo é criar um usuário dedicado com permissões específicas, seguindo o princípio do menor privilégio.
+
+    1. Acesse o **Console da AWS** e procure pelo serviço IAM.
+
+    2. No menu lateral, clique em **Users** (Usuários) e depois em Create user.
+
+    3. **User details:**
+
+   *  User name: Dê um nome para o usuário, por exemplo: predictor-project-user.
+
+    *  NÃO marque a opção "Provide user access to the AWS Management Console". Este usuário será usado apenas  1. por programas (acesso programático).
+    *  
+    4. **Set permissions:**
+   *   Selecione a opção Attach policies directly.
+
+   *   Na barra de busca, procure e marque as seguintes políticas gerenciadas pela AWS. Elas darão as permissões necessárias para nossos serviços interagirem:
+
+       *   `AmazonS3FullAccess`
+
+       *   `AmazonEC2ContainerRegistryFullAccess` (ou `AmazonECRFullAccess`)
+
+       *   `AWSAppRunnerFullAccess`
+
+       *   `AmazonECS_FullAccess`
+
+       *   `AWSStepFunctionsFullAccess`
+    5. **Review and create:**
+   *   Revise as informações e clique em *Create user*.
+    6. **Salve as Credenciais (Etapa Crítica):**
+   *   Na lista de usuários, clique no nome do usuário que você acabou de criar.
+   *   Vá para a aba **Security credentials**.
+   *   Role para baixo até **Access keys** e clique em **Create access key.**
+   *   Selecione **Command Line Interface (CLI)**, marque a caixa de confirmação e clique em **Next**.
+   *   Clique em **Create access key**.
+   *   ***IMPORTANTE:*** Copie e salve o `Access key ID` e a `Secret access key` em um local seguro. Esta é a única vez que a chave secreta será exibida.
+    7. **Configure a AWS CLI:**
+   *   Abra seu terminal e configure o perfil de acesso com as chaves que você acabou de salvar:
+        ```bash
+        aws configure (ENTER)
+
+        Preencha com seu Access Key ID, Secret Access Key, uma região padrão (ex: us-east-1) e o formato de saída (json).
+        ```
+
+
+2. **S3 - Criando nosso Bucket de Armazenamento (nosso "Data Lake")**
+   O Amazon S3 será o coração do nosso armazenamento, guardando os dados brutos, as features processadas e os modelos treinados.
+
+   1. No console da AWS, procure e vá para o serviço **S3**.
+   2. Clique em **Create bucket.**
+   3. **General configuration:**
+   *   **Bucket name:** Dê um nome **globalmente único**. Use o padrão do seu arquivo `.env`: `predictor-fut-br-data-SEU-NOME-UNICO.`
+   *   **AWS Region:** Selecione a mesma região que você configurou no seu AWS CLI.
+   4. **Block Public Access settings:**
+   *   Mantenha a opção **Block all public access** LIGADA (marcada). Nossos dados são privados.
+   5. **Bucket Versioning:**
+   *   Selecione **Enable.** Isso nos protege contra exclusões acidentais.
+   6. **Default encryption:**
+   *   Selecione **Enable**. Garanta que a opção `Amazon S3-managed keys (SSE-S3)` esteja selecionada (esta opção não tem custo).
+   7. **Clique em Create bucket.**
+
+   8. **Crie as Pastas:**
+   *   Dentro do bucket, clique em **Create folder** e crie as três pastas necessárias: `raw`, `processed` e `models`.
+   9. **Faça o Upload do Dado Inicial:**
+   *   Navegue até a pasta `raw` e faça o upload do arquivo `campeonato-brasileiro-full.csv` do seu computador.
+
+
+
+3. **ECR - Criando os Repositórios para as Imagens Docker**
+O Elastic Container Registry (ECR) é o nosso "Docker Hub" privado na AWS, onde guardaremos as imagens prontas para serem usadas pelo App Runner e Fargate.
+
+   1. No console da AWS, procure e vá para o serviço **Elastic Container Registry (ECR).**
+   2. Clique em **Create repository.**
+   3. Configure o primeiro repositório:
+   *   **Visibility settings**: `Private`
+   *   **Repository name:** Use o nome que está no seu arquivo `.env`: `prediction-api` (ou o que você definiu).
+   *   Clique em **Create repository.**
+   4. **Repita o processo** para criar o segundo repositório com o nome `ml-jobs`.
+   
+   
 
 ## 🚀 Fase 2: Deploy Manual e Validação
 Nesta fase, validamos cada componente manualmente antes de automatizar.
@@ -77,4 +151,4 @@ A interface para o usuário final.
 ## 🧹 Fase 5: Limpeza dos Recursos
 Um guia essencial para evitar custos inesperados.
 
-- (Listar a ordem correta para deletar todos os recursos da AWS: App Runner, EventBridge, Step Functions, ECS, ECR, S3, IAM Roles).
+- WIP (Listar a ordem correta para deletar todos os recursos da AWS: App Runner, EventBridge, Step Functions, ECS, ECR, S3, IAM Roles).
