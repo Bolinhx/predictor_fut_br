@@ -37,16 +37,20 @@ def carregar_dados_s3():
     return df
 
 def extrair_partes_formacao(formacao):
-    if pd.isna(formacao) or '-' not in str(formacao): return [4, 4, 2]
+    if pd.isna(formacao) or '-' not in str(formacao):
+        return [4, 4, 2]
     parts = str(formacao).split('-')
     try:
-        if len(parts) == 3: return [int(p) for p in parts]
-        if len(parts) == 4: return [int(parts[0]), sum(int(p) for p in parts[1:-1]), int(parts[-1])]
+        if len(parts) == 3:
+            return [int(p) for p in parts]
+        if len(parts) == 4:
+            return [int(parts[0]), sum(int(p) for p in parts[1:-1]), int(parts[-1])]
         return [4, 4, 2]
     except (ValueError, TypeError):
         return [4, 4, 2]
 
 def gerar_features_para_confronto(df_historico, time_mandante, time_visitante):
+    # ... (parte inicial da função continua a mesma)
     ultimos_jogos_mandante = df_historico[
         (df_historico['mandante'] == time_mandante) | (df_historico['visitante'] == time_mandante)
     ].sort_values(by='data', ascending=False).head(5)
@@ -64,16 +68,22 @@ def gerar_features_para_confronto(df_historico, time_mandante, time_visitante):
                 gols_feitos.append(row['mandante_placar'])
                 gols_sofridos.append(row['visitante_placar'])
                 vencedor = row['vencedor']
-                if vencedor == nome_time: pontos.append(3)
-                elif vencedor == '-': pontos.append(1)
-                else: pontos.append(0)
-            else:
+                if vencedor == nome_time:
+                    pontos.append(3)
+                elif vencedor == '-':
+                    pontos.append(1)
+                else:
+                    pontos.append(0)
+            else: # Time era visitante
                 gols_feitos.append(row['visitante_placar'])
                 gols_sofridos.append(row['mandante_placar'])
                 vencedor = row['vencedor']
-                if vencedor == nome_time: pontos.append(3)
-                elif vencedor == '-': pontos.append(1)
-                else: pontos.append(0)
+                if vencedor == nome_time:
+                    pontos.append(3)
+                elif vencedor == '-':
+                    pontos.append(1)
+                else:
+                    pontos.append(0)
         
         return np.mean(gols_feitos), np.mean(gols_sofridos), np.mean(pontos)
 

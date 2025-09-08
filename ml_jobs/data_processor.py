@@ -70,11 +70,14 @@ def process_data(input_path_hist, input_path_new, output_path_features):
     df_final['eh_classico'] = (df_final['mandante_estado'] == df_final['visitante_estado']).astype(int)
 
     def extrair_partes_formacao(formacao):
-        if pd.isna(formacao) or '-' not in str(formacao): return [4, 4, 2]
+        if pd.isna(formacao) or '-' not in str(formacao):
+            return [4, 4, 2]
         parts = str(formacao).split('-')
         try:
-            if len(parts) == 3: return [int(p) for p in parts]
-            if len(parts) == 4: return [int(parts[0]), sum(int(p) for p in parts[1:-1]), int(parts[-1])]
+            if len(parts) == 3:
+                return [int(p) for p in parts]
+            if len(parts) == 4:
+                return [int(parts[0]), sum(int(p) for p in parts[1:-1]), int(parts[-1])]
             return [4, 4, 2]
         except (ValueError, TypeError):
             return [4, 4, 2]
