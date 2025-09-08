@@ -3,26 +3,32 @@ import pandas as pd
 import numpy as np
 import requests
 import boto3
+import os
 from io import StringIO
+from dotenv import load_dotenv
 
-# --- CONFIGURAÇÕES GERAIS ---
-NOME_DO_BUCKET_S3 = "predictor-fut-br-data-bolinhx-2025"
-URL_DA_API_APPRUNNER = "https://edr5jpa2nn.us-east-2.awsapprunner.com/" 
+# Carregar as variáveis de ambiente do arquivo .env
+load_dotenv()
+
+# --- CONFIGURAÇÕES GERAIS (LIDAS DO AMBIENTE) ---
+# Ler as configurações do ambiente
+NOME_DO_BUCKET_S3 = os.getenv("S3_BUCKET_NAME")
+URL_DA_API_APPRUNNER = os.getenv("APP_RUNNER_SERVICE_URL")
 
 CAMINHO_DADOS_HISTORICOS = "raw/dados_producao_inicial.csv"
 
-# --- FUNÇÕES DE ENGENHARIA DE FEATURES (Adaptadas do data_processor.py) ---
 
-# Função para carregar os dados do S3 e guardar em cache para performance
-@st.cache_data(ttl=3600) # Atualiza a cada 1 hora
+# --- FUNÇÕES DE ENGENHARIA DE FEATURES (Adaptadas do data_processor.py) ---
+@st.cache_data(ttl=3600)
 def carregar_dados_s3():
-    """Carrega o CSV de dados históricos do S3 para um DataFrame."""
     print("Carregando dados do S3...")
+    if not NOME_DO_BUCKET_S3:
+        raise ValueError("A variável de ambiente S3_BUCKET_NAME não está configurada no arquivo .env")
+    
     s3_client = boto3.client('s3')
     obj = s3_client.get_object(Bucket=NOME_DO_BUCKET_S3, Key=CAMINHO_DADOS_HISTORICOS)
     df = pd.read_csv(StringIO(obj['Body'].read().decode('utf-8')))
     
-    # Padroniza nomes de colunas e data
     df.columns = df.columns.str.lower()
     if 'rodata' in df.columns:
         df.rename(columns={'rodata': 'rodada'}, inplace=True)
@@ -41,9 +47,6 @@ def extrair_partes_formacao(formacao):
         return [4, 4, 2]
 
 def gerar_features_para_confronto(df_historico, time_mandante, time_visitante):
-    """Calcula as features de 'Forma' e 'Contexto' para um único confronto."""
-    
-    # 1. Isolar os últimos 5 jogos de cada time
     ultimos_jogos_mandante = df_historico[
         (df_historico['mandante'] == time_mandante) | (df_historico['visitante'] == time_mandante)
     ].sort_values(by='data', ascending=False).head(5)
@@ -52,7 +55,6 @@ def gerar_features_para_confronto(df_historico, time_mandante, time_visitante):
         (df_historico['visitante'] == time_visitante) | (df_historico['mandante'] == time_visitante)
     ].sort_values(by='data', ascending=False).head(5)
 
-    # 2. Calcular 'Forma' (média de gols e pontos)
     def calcular_forma(df_time, nome_time):
         gols_feitos = []
         gols_sofridos = []
@@ -65,7 +67,7 @@ def gerar_features_para_confronto(df_historico, time_mandante, time_visitante):
                 if vencedor == nome_time: pontos.append(3)
                 elif vencedor == '-': pontos.append(1)
                 else: pontos.append(0)
-            else: # Time era visitante
+            else:
                 gols_feitos.append(row['visitante_placar'])
                 gols_sofridos.append(row['mandante_placar'])
                 vencedor = row['vencedor']
@@ -78,7 +80,6 @@ def gerar_features_para_confronto(df_historico, time_mandante, time_visitante):
     form_gols_feitos_m, form_gols_sofridos_m, form_pontos_m = calcular_forma(ultimos_jogos_mandante, time_mandante)
     form_gols_feitos_v, form_gols_sofridos_v, form_pontos_v = calcular_forma(ultimos_jogos_visitante, time_visitante)
 
-    # 3. Calcular 'Contexto' (Tática e Clássico)
     ultimo_jogo_mandante = ultimos_jogos_mandante.iloc[0]
     ultimo_jogo_visitante = ultimos_jogos_visitante.iloc[0]
 
@@ -92,24 +93,12 @@ def gerar_features_para_confronto(df_historico, time_mandante, time_visitante):
     estado_visitante = ultimo_jogo_visitante['visitante_estado'] if ultimo_jogo_visitante['visitante'] == time_visitante else ultimo_jogo_visitante['mandante_estado']
     eh_classico = 1 if estado_mandante == estado_visitante else 0
 
-    # 4. Montar o payload final para a API
     payload = {
-        "form_gols_feitos_mandante": form_gols_feitos_m,
-        "form_gols_sofridos_mandante": form_gols_sofridos_m,
-        "form_pontos_mandante": form_pontos_m,
-        "form_gols_feitos_visitante": form_gols_feitos_v,
-        "form_gols_sofridos_visitante": form_gols_sofridos_v,
-        "form_pontos_visitante": form_pontos_v,
-        "eh_classico": eh_classico,
-        "mandante_def": m_def,
-        "mandante_mid": m_mid,
-        "mandante_att": m_att,
-        "visitante_def": v_def,
-        "visitante_mid": v_mid,
-        "visitante_att": v_att,
-        "diff_def": m_def - v_def,
-        "diff_mid": m_mid - v_mid,
-        "diff_att": m_att - v_att
+        "form_gols_feitos_mandante": form_gols_feitos_m, "form_gols_sofridos_mandante": form_gols_sofridos_m, "form_pontos_mandante": form_pontos_m,
+        "form_gols_feitos_visitante": form_gols_feitos_v, "form_gols_sofridos_visitante": form_gols_sofridos_v, "form_pontos_visitante": form_pontos_v,
+        "eh_classico": eh_classico, "mandante_def": m_def, "mandante_mid": m_mid, "mandante_att": m_att,
+        "visitante_def": v_def, "visitante_mid": v_mid, "visitante_att": v_att,
+        "diff_def": m_def - v_def, "diff_mid": m_mid - v_mid, "diff_att": m_att - v_att
     }
     return payload
 
@@ -119,7 +108,6 @@ st.set_page_config(page_title="Previsor do Brasileirão", layout="wide")
 st.title("🤖 Previsor de Partidas do Brasileirão")
 st.markdown("Selecione os times mandante e visitante para obter a previsão de resultado com base no modelo de Machine Learning.")
 
-# Carregar os dados históricos uma vez
 try:
     df_historico_completo = carregar_dados_s3()
     lista_times = sorted(df_historico_completo['mandante'].unique())
@@ -128,35 +116,30 @@ try:
 
     with col1:
         time_mandante = st.selectbox("Escolha o Time Mandante", lista_times, index=0)
-    
     with col2:
-        # Garante que o mesmo time não seja mandante e visitante
         opcoes_visitante = [t for t in lista_times if t != time_mandante]
         time_visitante = st.selectbox("Escolha o Time Visitante", opcoes_visitante, index=1)
 
     if st.button("Analisar e Prever Resultado"):
-        if not URL_DA_API_APPRUNNER or "SUA_URL" in URL_DA_API_APPRUNNER:
-            st.error("ERRO: A URL da API no App Runner não foi configurada no script. Edite o arquivo `frontend/app.py`.")
+        if not URL_DA_API_APPRUNNER:
+            st.error("ERRO: A variável de ambiente APP_RUNNER_SERVICE_URL não foi configurada. Preencha o arquivo .env.")
         else:
             with st.spinner(f"Analisando o confronto: {time_mandante} vs {time_visitante}..."):
                 try:
-                    # 1. Gerar as features para o confronto selecionado
                     features_payload = gerar_features_para_confronto(df_historico_completo, time_mandante, time_visitante)
-                    
-                    # 2. Enviar as features para a API de previsão
                     api_url = f"{URL_DA_API_APPRUNNER}/predict"
                     response = requests.post(api_url, json=features_payload)
-                    response.raise_for_status() # Lança um erro se a resposta for 4xx ou 5xx
+                    response.raise_for_status()
                     
-                    # 3. Exibir o resultado
                     resultado = response.json()
+                    
                     if 'prediction_text' in resultado:
-                     st.success("Previsão gerada com sucesso!")
-                     st.write(f"### O resultado mais provável é: **{resultado['prediction_text']}**")
+                        st.success("Previsão gerada com sucesso!")
+                        st.write(f"### O resultado mais provável é: **{resultado['prediction_text']}**")
                     else:
                         st.error("A API retornou uma resposta inesperada.")
                         st.write("Resposta recebida da API:")
-                        st.json(resultado) # Mostra o JSON exato que recebemos para depuração
+                        st.json(resultado)
 
                     with st.expander("Ver features enviadas para o modelo"):
                         st.json(features_payload)
@@ -168,4 +151,4 @@ try:
 
 except Exception as e:
     st.error(f"Erro fatal ao carregar os dados históricos do S3: {e}")
-    st.info("Verifique se o nome do bucket S3 está correto e se as credenciais da AWS estão configuradas.")
+    st.info("Verifique se o nome do bucket S3 está correto no arquivo .env e se as credenciais da AWS estão configuradas.")

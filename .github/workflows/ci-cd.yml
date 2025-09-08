@@ -1,43 +1,51 @@
+# Nome do Workflow
+name: CI - Verificação de Qualidade e Build
 
-name: CI/CD Pipeline - Predictor Fut BR
-
-
+# Gatilhos: Quando o workflow deve rodar
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
+# Jobs: As tarefas a serem executadas
 jobs:
-  build-and-test:
+  quality-and-build-checks:
+    # O tipo de máquina virtual para rodar o job
     runs-on: ubuntu-latest
 
+    # Passos sequenciais do job
     steps:
-      - name: Checkout do repositório
+      # 1. Baixa o código do seu repositório para a máquina virtual
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Configurar Python 3.11
-        uses: actions/setup-python@v5
+      # 2. Configura o ambiente Python
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      - name: Instalar dependências Python
+      # 3. Instala as dependências (de todos os arquivos, para validar)
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -r ml_jobs/requirements-jobs.txt
+          pip install -r frontend/requirements-frontend.txt
+          pip install ruff # Instala a ferramenta de linting
 
-      - name: Verificar qualidade do código com Ruff
+      # 4. Verifica a qualidade do código com Ruff
+      - name: Lint with Ruff
         run: |
-          pip install ruff
-          ruff check . --output-format=github
-          
-      - name: Configurar Docker Buildx
-        uses: docker/setup-buildx-action@v3
+          ruff check .
 
-      - name: Construir imagem Docker
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false # 'false' significa que vamos apenas construir, sem enviar para um registro
-          tags: bolinhx/predictor-fut-br:latest 
+      # 5. Valida o build da imagem Docker da API
+      - name: Build API Docker image
+        run: |
+          docker build -t api-test -f api/Dockerfile .
+      
+      # 6. Valida o build da imagem Docker dos Jobs de ML
+      - name: Build ML Jobs Docker image
+        run: |
+          docker build -t ml-jobs-test -f ml_jobs/Dockerfile .
