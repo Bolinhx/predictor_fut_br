@@ -128,7 +128,7 @@ A infraestrutura do backend é provisionada e gerenciada na AWS. As instruções
 ### Frontend (Aplicação Streamlit)
 1.  **Clone o repositório:**
     ```bash
-    git clone [URL_DO_SEU_REPO]
+    git clone https://github.com/Bolinhx/predictor_fut_br.git
     cd predictor_fut_br
     ```
 2.  **Crie e ative um ambiente virtual:**
