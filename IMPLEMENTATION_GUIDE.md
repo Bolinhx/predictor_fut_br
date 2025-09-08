@@ -116,13 +116,39 @@ O Elastic Container Registry (ECR) é o nosso "Docker Hub" privado na AWS, onde 
    *   Clique em **Create repository.**
    4. **Repita o processo** para criar o segundo repositório com o nome `ml-jobs`.
    
-   
+
 
 ## 🚀 Fase 2: Deploy Manual e Validação
-Nesta fase, validamos cada componente manualmente antes de automatizar.
+Nesta fase, vamos colocar nosso código para rodar na nuvem pela primeira vez. O objetivo é validar cada componente de forma isolada (as imagens Docker, as permissões, os serviços) antes de conectá-los com a automação.
 
 1. **Build e Push das Imagens Docker:**
-   - WIP (Inclir os comandos docker build, tag e push para as duas imagens, explicando como obter a URI do ECR).
+   Nossas "receitas" (`Dockerfile`) estão prontas. Agora vamos usá-las para construir as imagens e enviá-las para nosso registro privado na AWS (ECR).
+
+   1. **Autenticar o Docker no ECR:**
+   No seu terminal, execute o comando abaixo, substituindo `sua-regiao` e `SEU_ID_DE_CONTA` pelos seus valores. A forma mais fácil de obter o comando exato é ir ao console do **ECR**, clicar em um dos repositórios e no botão **"View push commands".**
+   ```bash
+   aws ecr get-login-password --region sua-regiao | docker login --username AWS --password-stdin SEU_ID_DE_CONTA.dkr.sua-regiao.amazonaws.com
+   ```
+   Você deve ver a mensagem "Login Succeeded".
+
+    2. **Construir, Marcar (Tag) e Enviar as Imagens:**
+   Execute os seguintes comandos na raiz do seu projeto. Lembre-se de preencher as variáveis no seu arquivo `.env` primeiro, pois os comandos usam `$(grep ...)` para lê-las. 
+   *    **Para a API de Predição:**
+        ```bash
+        # Obter a URI do repositório a partir do seu arquivo .env
+        ECR_URI_API=$(grep ECR_REPO_API .env | cut -d '=' -f2 | tr -d '"')
+        AWS_ACCOUNT_ID=$(grep AWS_ACCOUNT_ID .env | cut -d '=' -f2 | tr -d '"')
+        AWS_REGION=$(grep AWS_REGION .env | cut -d '=' -f2 | tr -d '"')
+
+        # Construir, marcar e enviar
+        docker build -t $ECR_URI_API -f api/Dockerfile .
+        docker tag $ECR_URI_API:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_URI_API:latest
+        docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_URI_API:latest
+        ```
+
+
+
+
 2. **Deploy da API no App Runner:**
    - WIP (Detalhe o processo de criação do serviço no App Runner, a configuração da porta, CPU/Memória e, crucialmente, a criação da Instance Role para acesso ao S3).
    - WIP Solução de Problemas: Mencionar os erros comuns, como o timeout do Health Check e a necessidade de aumentar a memória.
