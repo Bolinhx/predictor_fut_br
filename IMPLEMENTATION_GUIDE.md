@@ -102,6 +102,9 @@ Nesta fase, criamos os recursos de base que nosso sistema precisará para armaze
    *   Dentro do bucket, clique em **Create folder** e crie as três pastas necessárias: `raw`, `processed` e `models`.
    9. **Faça o Upload do Dado Inicial:**
    *   Navegue até a pasta `raw` e faça o upload do arquivo `campeonato-brasileiro-full.csv` do seu computador.
+     
+   <img width="2111" height="708" alt="S3 - Raiz" src="https://github.com/user-attachments/assets/11a625dc-de39-463a-a276-26fd0c7a6170" />
+
 
 
 
@@ -116,7 +119,9 @@ O Elastic Container Registry (ECR) é o nosso "Docker Hub" privado na AWS, onde 
    *   Clique em **Create repository.**
    4. **Repita o processo** para criar o segundo repositório com o nome `ml-jobs`.
    
+   <img width="2116" height="822" alt="ECR-Repositorys" src="https://github.com/user-attachments/assets/df06fc01-99a4-466b-bd66-a919bfcef2d9" />
 
+   
 
 ## 🚀 Fase 2: Deploy Manual e Validação
 Nesta fase, vamos colocar nosso código para rodar na nuvem pela primeira vez. O objetivo é validar cada componente de forma isolada (as imagens Docker, as permissões, os serviços) antes de conectá-los com a automação.
