@@ -8,7 +8,7 @@
 
 ## 📖 Introdução
 
-Este repositório é mais do que um projeto de Machine Learning; é um **guia prático e completo** para quem deseja construir uma pipeline de MLOps de ponta a ponta na AWS. Ele foi projetado para ser o mais **"Plug-and-Play"** possível, fornecendo uma base de código sólida para que você possa focar em aprender e implementar a arquitetura na nuvem.
+Este repositório é mais do que um projeto de Machine Learning; é um **guia prático e completo** para quem deseja construir uma pipeline (nesse caso de Machine Learning) de ponta a ponta na AWS. Ele foi projetado para ser o mais **"Plug-and-Play"** possível, fornecendo uma base de código sólida para que você não precise se precupar com o codigo/produto em si e possa focar em aprender e implementar a arquitetura na AWS.
 
 A intenção é preencher uma lacuna comum em tutoriais, oferecendo um projeto que integra múltiplos serviços da AWS de forma coesa, incluindo processamento de dados, treinamento de modelo, deploy de API, orquestração de eventos e uma interface para o usuário final.
 
@@ -23,8 +23,17 @@ O projeto começou como um desafio pessoal: construir um sistema preditivo compl
 
 Uma particularidade desta fase foi a utilização de uma IA Generativa como agente de desenvolvimento, com o objetivo de praticar a revisão e depuração de código gerado por IA – um fluxo de trabalho cada vez mais comum. O resultado foi uma aplicação funcional, porém estática, que validou a lógica do modelo e da API.
 
-### Fase 2: A Evolução para MLOps na Nuvem (v2.0)
+### Fase 2: A Evolução para MLOps na Nuvem ([v2.0](https://github.com/Bolinhx/predictor_fut_br/releases/tag/v2.0))
 Após a validação do protótipo, o desafio evoluiu: como transformar uma aplicação local em um sistema de produção resiliente, escalável e que se atualiza sozinho? Foi aí que nasceu a ideia de migrar tudo para a AWS e, mais importante, documentar cada passo para criar um guia para a comunidade. Esta versão implementa uma arquitetura serverless completa, com uma pipeline de retreinamento totalmente automatizada.
+
+### Fase 2.1: A Transformação em um Guia para a Comunidade(v2.1)
+Após a finalização da arquitetura V2.0, o projeto tomou um novo rumo: transformar todo o conhecimento adquirido em um recurso de aprendizado. Esta fase focou em refatorar o código para ser mais didático, introduzindo um arquivo `.env` para facilitar a configuração, e na criação de um guia de implementação detalhado para que outras pessoas pudessem recriar a solução, aprendendo com os desafios e soluções encontradas.
+
+## 🏛️ Arquitetura da Solução
+
+_WIP diagrama da arquitetura_
+
+➡️ **[Acesse a Legenda Detalhada da Arquitetura aqui!](./ARCHITECTURE_LEGEND.md)**
 
 ---
 
@@ -81,4 +90,4 @@ Tudo o que você precisa para colocar a mão na massa está no nosso manual deta
 
 ## 💬 Uma Nota Sobre Erros
 
-Quase todos os erros documentados na seção "Solução de Problemas" do guia de implementação foram problemas reais encontrados durante a construção deste projeto. Se você encontrar um obstáculo diferente, não desista! A depuração na nuvem é uma habilidade fundamental. Use as ferramentas de log da AWS, consulte uma IA e, se encontrar algo novo, sinta-se à vontade para abrir uma *issue* ou me contatar. Sua contribuição pode enriquecer ainda mais este guia!
+Quase todos os erros documentados na seção "Solução de Problemas" do guia de implementação foram problemas reais encontrados durante a construção deste projeto. Se você encontrar um obstáculo diferente, não desista e nem desespere! A depuração na nuvem é uma habilidade fundamental e e onde passamos mais tempo haha, tentei prever a maioria dos erros mas sabemos como as coisas são... vão ter outros erros. Use as ferramentas de log da AWS, consulte uma IA e, se encontrar algo novo, sinta-se à vontade para abrir uma *issue* ou me contatar. Sua contribuição pode enriquecer ainda mais este guia!
