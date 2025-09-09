@@ -150,16 +150,100 @@ Nesta fase, vamos colocar nosso código para rodar na nuvem pela primeira vez. O
         docker tag $ECR_URI_API:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_URI_API:latest
         docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_URI_API:latest
         ```
+   *    **Para os Jobs de ML:**
+        ```bash
+        # Obter a URI do repositório a partir do seu arquivo .env
+        ECR_URI_JOBS=$(grep ECR_REPO_JOBS .env | cut -d '=' -f2 | tr -d '"')
 
-
+        # Construir, marcar e enviar
+        docker build -t $ECR_URI_JOBS -f ml_jobs/Dockerfile .
+        docker tag $ECR_URI_JOBS:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_URI_JOBS:latest
+        docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_URI_JOBS:latest
+        ```
 
 
 2. **Deploy da API no App Runner:**
-   - WIP (Detalhe o processo de criação do serviço no App Runner, a configuração da porta, CPU/Memória e, crucialmente, a criação da Instance Role para acesso ao S3).
-   - WIP Solução de Problemas: Mencionar os erros comuns, como o timeout do Health Check e a necessidade de aumentar a memória.
+    Com a imagem da API no ECR, vamos colocá-la no ar.
+
+    1. Acesse o serviço **AWS App Runner** no console e clique em Create service
+    2. **Source and deployment:**
+*   **Source:** `Container registry`
+*   **Container image registry:** `Amazon ECR`
+*   **Container image URI:** `Container registry`
+    3. **Configure service:**
+*   **Service name:** `prediction-api`.
+*   **Virtual CPU & memory:** Para testes, comece com `1 vCPU` e `2 GB`. Se a aplicação falhar ao iniciar, pode ser necessário aumentar a memória para `3 GB`.
+*   **Port:** `80`
+    4. **Security (Etapa Crucial):**
+*   Na seção **Security**, clique em **Edit.**
+*   **Instance role:** Para que a API possa acessar o S3, precisamos de uma permissão. Crie uma nova IAM Role seguindo estes passos:
+    *   **Vá para o IAM -> Roles -> Create role.**
+    *   **Trusted entity type:** `Custom trust policy`. Cole o JSON:
+        ```json
+        {
+        "Version": "2012-10-17",
+        "Statement": [{
+        "Effect": "Allow",
+        "Principal": {"Service": "tasks.apprunner.amazonaws.com"},
+        "Action": "sts:AssumeRole"
+            }]
+        }
+        ```
+    *   **Permissions:** Anexe a política gerenciada pela AWS `AmazonS3ReadOnlyAccess`.
+    *   **Role name:** `AppRunnerInstanceRole.`
+    *   Volte para a configuração do App Runner, atualize a lista e selecione a `AppRunnerInstanceRole` que você acabou de criar.
+    5. Clique em **Create & deploy**.
+
+***🚨 Solução de Problemas Comuns no App Runner***
+
+*   Erro` Failed to create...`: Geralmente é um problema de tempo ou memória.
+    *   `Health check failed:` A aplicação demorou muito para iniciar. Edite o serviço, vá em **Health check** e aumente os valores de Timeout (para `20s`) e Interval (para `25s`).
+    *   `Unable to locate credentials`: A **Instance role** não foi criada ou anexada corretamente. Verifique o passo 4.
+
+
+
 3. **Execução Manual dos Jobs no Fargate:**
-   - WIP (Explicar como criar a Task Definition, a ECSTaskS3AccessRole e a ecsTaskExecutionRole. Mostre como executar a tarefa manualmente com o "Command Override" e como depurar os logs).
-   - WIP (Solução de Problemas: Detalhar os erros de permissão (iam:PassRole, AccessDenied) e como corrigi-los editando as políticas do IAM.)
+   Vamos validar que nossos scripts de processamento e treinamento rodam na nuvem.
+    1. **Crie as Permissões (IAM Roles)**: Nossa tarefa precisa de duas "credenciais":
+*   **Task Execution Role:** Permissão para o Fargate buscar a imagem no ECR. Geralmente a role `ecsTaskExecutionRole` já existe na conta.
+*   **Task Role:** Permissão para o nosso código acessar outros serviços.
+    *   **Vá para IAM -> Roles -> Create role.**
+    *   **Trusted entity:** `AWS service` -> **Use case**: `Elastic Container Service Task`.
+    *   **Permissions**: Anexe as políticas `AmazonS3FullAccess` e `AWSAppRunnerFullAccess`.
+    *   **Role name:** `ECSTaskS3AppRunnerRole.`
+    2. **Crie a Definição da Tarefa (Task Definition)**:
+*   **Vá para Amazon ECS -> Task Definitions -> Create new task definition.**
+*   **Task definition family**: `ml-job-task-family`.
+*   **Launch type:** `AWS Fargate`.
+*   **Task role:** Selecione a `ECSTaskS3AppRunnerRole` que acabamos de criar.
+*   **Task execution role:** Selecione a `ecsTaskExecutionRole`.
+*   **Container details:**
+    *   **Name:** `ml-jobs-container`.
+    *   **Image URI:** Cole a URI da sua imagem `ml-jobs` do ECR.
+*   Clique em **Create**.
+    3. **Execute a Tarefa Manualmente:**
+*   Vá para **Amazon ECS** -> Clusters e selecione o cluster `default` (ou crie um novo do tipo "Networking only" se não existir).
+*   Clique na aba **Tasks -> Run new task.**
+*   Launch type: `FARGATE`.
+*   **Task definition:** Selecione a `ml-job-task-family`.
+*   **Networking:** Garanta que uma VPC e Subnets estejam selecionadas e que **Public IP** esteja **ENABLED**.
+*   **Container Overrides:** Expanda a seção e, no campo **Command**, cole o comando para o primeiro script (separado por vírgulas) NAO ESQUECE DE SUBSTITUIR O NOME DO SEU BUCKET!!!:
+    ```bash
+    python,data_processor.py,s3://SEU-BUCKET/raw/campeonato-brasileiro-full.csv,s3://SEU-BUCKET/raw/campeonato-brasileiro-full.csv,s3://SEU-BUCKET/processed/features.parquet
+    ```
+    (Nota: Para este teste, usamos o mesmo arquivo como histórico e "novo", o que funciona para validação).
+*   Clique em **Run task**.
+
+Se correr tudo bem, na pasta `processed` do seu bucket vai ter um arquivo com nome `features.parquet`
+
+***🚨 Solução de Problemas Comuns no Fargate***
+
+*   **Erro** `iam:PassRole`: O serviço que está executando a tarefa (Step Functions, no futuro) precisa de permissão para "entregar" a `Task Role` à tarefa.
+*   **Erro** `PermissionError`: `Forbidden`: A `Task Role` (`ECSTaskS3AppRunnerRole`) não tem a permissão necessária (ex: `AmazonS3FullAccess`).
+*   **Erro** `FileNotFoundError`: `fsspec`: A imagem Docker está sem as bibliotecas `fsspec` e `s3fs`. Adicione-as ao `ml_jobs/requirements-jobs.txt`.
+
+
+
 
 ## 🤖 Fase 3: Automação com a Pipeline MLOps
 Agora, conectamos tudo em um fluxo automático.
