@@ -1,4 +1,4 @@
-# Predictor Fut BR: Análise Preditiva do Brasileirão
+# Predictor Fut BR: Guia de Implementação de Pipeline MLOps na AWS
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python)
 ![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws)
@@ -6,201 +6,79 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
 
-## 📖 Descrição do Projeto
+## 📖 Introdução
 
-Este é um projeto completo de Machine Learning Operations (MLOps) que constrói, implanta e mantém um sistema para prever os resultados de partidas de futebol do Campeonato Brasileiro. A solução vai desde a engenharia de features a partir de dados brutos até a entrega de uma aplicação web interativa para o usuário final, com uma pipeline de retreinamento totalmente automatizada e orientada a eventos na AWS.
+Este repositório é mais do que um projeto de Machine Learning; é um **guia prático e completo** para quem deseja construir uma pipeline de MLOps de ponta a ponta na AWS. Ele foi projetado para ser o mais **"Plug-and-Play"** possível, fornecendo uma base de código sólida para que você possa focar em aprender e implementar a arquitetura na nuvem.
 
-O objetivo principal foi construir um produto de dados de ponta a ponta, demonstrando habilidades em Engenharia de Dados, Arquitetura de Nuvem Serverless, Automação de CI/CD e MLOps.
+A intenção é preencher uma lacuna comum em tutoriais, oferecendo um projeto que integra múltiplos serviços da AWS de forma coesa, incluindo processamento de dados, treinamento de modelo, deploy de API, orquestração de eventos e uma interface para o usuário final.
 
-## 🏛️ Arquitetura da Solução (v2.0)
+---
 
-O sistema é projetado em uma arquitetura de microsserviços e orientada a eventos, utilizando majoritariamente serviços "serverless" da AWS para otimizar custos e escalabilidade.
+## 🧭 A Jornada do Projeto
 
-```mermaid
-graph TD
-subgraph "Fluxo da Aplicação do Usuário"
-User["Jornalista (Usuário Final)"] --> Streamlit["Streamlit Cloud - Frontend"]
-Streamlit -->|1. Faz chamada de API| AppRunnerAPI["AWS App Runner - API de Previsão"]
-AppRunnerAPI -->|2. Carrega modelo| S3Model["Amazon S3 (/models)"]
-end
+Este projeto nasceu de uma jornada de aprendizado pessoal e evoluiu para um recurso para a comunidade.
 
-    subgraph "Pipeline Automática de Retreinamento"
-        S3Trigger["Amazon S3 (Novos dados em /raw)"] -->|1. Gera Evento| EventBridge["Amazon EventBridge (Gatilho)"]
-        EventBridge -->|2. Inicia Pipeline| StepFunctions["AWS Step Functions (Orquestrador)"]
-        StepFunctions -->|3. Job de ETL| FargateETL["AWS Fargate (data_processor.py)"]
-        FargateETL -->|4. Salva Features| S3Processed["Amazon S3 (/processed)"]
-        StepFunctions -->|5. Job de Treinamento| FargateTrain["AWS Fargate (model_trainer.py)"]
-        FargateTrain -->|6. Salva Modelo| S3Model
-        StepFunctions -->|7. Job de Deploy| FargateDeploy["AWS Fargate (deploy_api.py)"]
-        FargateDeploy -->|8. Comanda Deploy| AppRunnerAPI
-    end
+### Fase 1: A Prova de Conceito Local ([v1.0](https://github.com/bolinhx/predictor_fut_br/releases/tag/v1.0))
+O projeto começou como um desafio pessoal: construir um sistema preditivo completo, passando por todas as etapas clássicas: Análise Exploratória de Dados (EDA), Engenharia de Features, treinamento de um modelo de Machine Learning e a criação de uma API RESTful em Docker.
 
-    subgraph "Fluxo de Atualização de Código (CI/CD)"
-        GitHub["GitHub (Push na branch main)"] --> GHActions["GitHub Actions"]
-        GHActions -->|Build & Push| ECR["Amazon ECR (Registro de Imagens)"]
-        ECR -->|Imagem para Deploy| AppRunnerAPI
-    end
+Uma particularidade desta fase foi a utilização de uma IA Generativa como agente de desenvolvimento, com o objetivo de praticar a revisão e depuração de código gerado por IA – um fluxo de trabalho cada vez mais comum. O resultado foi uma aplicação funcional, porém estática, que validou a lógica do modelo e da API.
 
-    style User fill:#D5F5E3,stroke:#2ECC71
-    style Streamlit fill:#FFD6D6,stroke:#E74C3C
-    style AppRunnerAPI fill:#D6EAF8,stroke:#3498DB
-    style S3Trigger fill:#FCF3CF,stroke:#F1C40F
-    style S3Processed fill:#FCF3CF,stroke:#F1C40F
-    style S3Model fill:#FCF3CF,stroke:#F1C40F
-    style EventBridge fill:#EBDEF0,stroke:#8E44AD
-    style StepFunctions fill:#EBDEF0,stroke:#8E44AD
-    style FargateETL fill:#E8DAEF,stroke:#8E44AD
-    style FargateTrain fill:#E8DAEF,stroke:#8E44AD
-    style FargateDeploy fill:#E8DAEF,stroke:#8E44AD
-    style GitHub fill:#D5D8DC,stroke:#5D6D7E
-    style GHActions fill:#D5D8DC,stroke:#5D6D7E
-    style ECR fill:#D5D8DC,stroke:#5D6D7E
-```
+### Fase 2: A Evolução para MLOps na Nuvem (v2.0)
+Após a validação do protótipo, o desafio evoluiu: como transformar uma aplicação local em um sistema de produção resiliente, escalável e que se atualiza sozinho? Foi aí que nasceu a ideia de migrar tudo para a AWS e, mais importante, documentar cada passo para criar um guia para a comunidade. Esta versão implementa uma arquitetura serverless completa, com uma pipeline de retreinamento totalmente automatizada.
 
-**Fluxo de MLOps (Retreinamento Automático):**
-1.  **Gatilho:** Um novo arquivo `.csv` com dados de uma nova rodada é enviado para a pasta `raw/` no **Amazon S3**.
-2.  **Detecção:** O **Amazon EventBridge** detecta o novo objeto e dispara uma regra.
-3.  **Orquestração:** A regra inicia uma pipeline no **AWS Step Functions**.
-4.  **Execução:** A pipeline executa uma sequência de tarefas no **AWS Fargate**:
-    * **Passo 1:** Um contêiner processa os dados novos e antigos e salva uma nova tabela de features no S3.
-    * **Passo 2:** Outro contêiner carrega as features, retreina o modelo de ML e salva o novo artefato do modelo no S3.
-    * **Passo 3:** Um último contêiner comanda a API no **AWS App Runner** para iniciar um novo deploy.
-5.  **Atualização:** A API no App Runner reinicia, baixa o modelo mais recente do S3 e passa a servir as novas previsões.
-6.  
-## 📊 Fonte dos Dados
+---
 
-Os dados utilizados neste projeto foram obtidos através do Kaggle, no dataset **"Campeonato Brasileiro de Futebol"**, compilado por Ado Duque. O dataset contém informações detalhadas sobre as partidas do Brasileirão de 2003 a 2024.
+## 🎯 Para Quem é Este Guia?
 
-* **Link para o Dataset:** [https://www.kaggle.com/datasets/adaoduque/campeonato-brasileiro-de-futebol](https://www.kaggle.com/datasets/adaoduque/campeonato-brasileiro-de-futebol)
+* **Estudantes e Desenvolvedores Iniciantes em Nuvem:** Para quem busca um projeto prático e completo na AWS que vai além dos tutoriais básicos, integrando contêineres, eventos e serviços de ML.
+* **Profissionais em Transição:** Para quem já entende os conceitos de nuvem, mas precisa de um projeto coeso e realista para aplicar e solidificar seus conhecimentos.
+* **Candidatos a Certificações AWS:** Para quem está estudando para a certificação **Solutions Architect - Associate** e quer uma experiência prática que cubra múltiplos domínios do exame.
 
-Foram explorados múltiplos arquivos, mas o arquivo `campeonato-brasileiro-full.csv` foi selecionado como a fonte principal de verdade para o modelo final, devido à sua consistência e riqueza de informações ao longo do tempo.
+---
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ O Que Você Vai Construir
 
-* **Linguagem:** Python 3.11
-* **Análise de Dados:** Pandas, NumPy
-* **Machine Learning:** Scikit-learn, XGBoost
-* **Interface Web:** Streamlit
-* **Serviço de API:** FastAPI, Uvicorn
-* **Containerização:** Docker
-* **Nuvem (AWS):** S3, IAM, ECR, ECS (Fargate), App Runner, Step Functions, EventBridge
-* **CI/CD:** GitHub Actions
-  
-## 💻 Ambiente de Desenvolvimento
+Seguindo o guia, você irá provisionar e configurar uma arquitetura completa na AWS, composta por:
+* Um **Data Lake** no Amazon S3.
+* Uma **API de previsão** serverless rodando no AWS App Runner.
+* **Jobs de ETL e Treinamento** em contêineres executados sob demanda com AWS Fargate.
+* Uma **pipeline de orquestração** inteligente com AWS Step Functions.
+* Um **gatilho automático** baseado em eventos com Amazon EventBridge.
+* Uma **interface web interativa** para o usuário final com Streamlit.
 
-Este projeto foi desenvolvido em um **ambiente local(Fedora - Linux)** utilizando **VS Code e Jupyter Notebooks**. A IA generativa **Gemini (Google)** foi utilizada como assistente de programação para acelerar o desenvolvimento, auxiliar na depuração de erros complexos, refatorar código para melhores práticas e para brainstorming de estratégias e arquitetura do projeto.
+---
 
-## ⚙️ CI/CD - Automação e Qualidade
+## ✅ Habilidades para a Certificação AWS Solutions Architect - Associate
 
-O repositório está configurado com uma pipeline de Integração Contínua (CI) utilizando **GitHub Actions**. A cada `push` ou `pull request` para a branch `main`, o workflow (`.github/workflows/ci-cd.yml`) executa automaticamente os seguintes passos:
+Este projeto fornece experiência prática em conceitos cobrados em todos os domínios da prova SAA-C03:
 
-1.  **Configuração do Ambiente:** Prepara uma máquina virtual Linux com Python e instala todas as dependências do projeto.
-2.  **Linting de Código:** Utiliza a ferramenta `Ruff` para verificar a qualidade do código, garantindo que ele siga as boas práticas e esteja livre de erros comuns de sintaxe.
-3.  **Teste de Build do Docker:** Executa o comando `docker build` para validar o `Dockerfile`, garantindo que a aplicação pode ser containerizada com sucesso.
+- **[x] Domain 1: Design Secure Architectures**
+  - Implementação de **IAM Roles** com o princípio do menor privilégio (`ECSTaskRole`, `AppRunnerInstanceRole`, `StepFunctionsRole`).
+  - Uso de políticas customizadas e gerenciadas.
+  - Configuração de buckets **S3** privados.
 
-Este processo automatizado garante a integridade e a qualidade do código, facilitando a manutenção e futuras implantações.
+- **[x] Domain 2: Design Resilient Architectures**
+  - Construção de uma **arquitetura desacoplada** e orientada a eventos com **EventBridge** e **Step Functions**.
+  - Utilização de serviços gerenciados e serverless (**App Runner**, **Fargate**) que aumentam a resiliência.
 
-## 📂 Estrutura do Projeto
+- **[x] Domain 3: Design High-Performing Architectures**
+  - Seleção de serviços de computação adequados para cada tarefa (App Runner para serviços web, Fargate para jobs em lote).
+  - Utilização do **S3** como uma camada de armazenamento performática.
 
-```
-predictor_fut_br/
-├── .github/              # Workflows do GitHub Actions
-├── api/                  # Código da API (main.py, Dockerfile)
-├── frontend/             # Aplicação Streamlit (app.py, requirements)
-├── ml_jobs/              # Scripts de ETL e Treinamento (data_processor.py, etc., Dockerfile)
-├── notebooks/            # Análise exploratória e prototipagem inicial
-├── .dockerignore
-├── .gitignore
-├── README.md
-└── requirements.txt      # Dependências da API
-```
+- **[x] Domain 4: Design Cost-Optimized Architectures**
+  - Adoção de uma abordagem **serverless-first**, onde você só paga pelos recursos quando eles estão em uso, minimizando custos ociosos.
+  - Estratégia de "pausar" serviços como o App Runner para controlar os custos de desenvolvimento.
 
-## 🚀 Como Executar
+---
 
-### Pré-requisitos
-* Python 3.11+
-* Conta na AWS com AWS CLI configurado
-* Docker Desktop
+## 🚀 Como Começar
 
-### Backend (API e Pipeline)
-A infraestrutura do backend é provisionada e gerenciada na AWS. As instruções de deploy e automação estão contidas na lógica do projeto e são orquestradas pelo Step Functions.
+Tudo o que você precisa para colocar a mão na massa está no nosso manual detalhado.
 
-### Frontend (Aplicação Streamlit)
-1.  **Clone o repositório:**
-    ```bash
-    git clone https://github.com/Bolinhx/predictor_fut_br.git
-    cd predictor_fut_br
-    ```
-2.  **Crie e ative um ambiente virtual:**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # Mac/Linux
-    .\venv\Scripts\activate    # Windows
-    ```
-3.  **Instale as dependências:**
-    ```bash
-    pip install -r frontend/requirements-frontend.txt
-    ```
-4.  **Configure o app.py:**
-    * Abra o arquivo `frontend/app.py` e substitua os placeholders `SEU-NOME-DE-BUCKET-AQUI` e `SUA_URL_DA_API_APPRUNNER_AQUI` pelos seus valores.
-5.  **Execute a aplicação:**
-    * *Importante: O serviço da API no AWS App Runner deve estar no estado "Running" (reative-o se estiver pausado).*
-    ```bash
-    streamlit run frontend/app.py
-    ```
+➡️ **[Acesse o Guia de Implementação Completo aqui!](./IMPLEMENTATION_GUIDE.md)**
 
-7.  **Teste a API:**
-    Abra seu navegador e acesse `http://127.0.0.1:8000/docs` para interagir com a API e fazer previsões.
+---
 
-### 🔧 Usando o Gerador de Features
+## 💬 Uma Nota Sobre Erros
 
-O projeto inclui uma ferramenta de linha de comando, `gerar_features.py`, para automatizar a criação do JSON de features para qualquer confronto.
-
-1.  **Abra um novo terminal** na pasta raiz do projeto.
-2.  **Execute o script** passando o nome do mandante e do visitante entre aspas. O script é tolerante a maiúsculas/minúsculas.
-
-    **Exemplo:**
-    ```bash
-    python gerar_features.py "Palmeiras" "Corinthians"
-    ```
-
-3.  **O script irá gerar e imprimir o JSON formatado**, pronto para ser copiado e colado no corpo da requisição do endpoint `/predict` na documentação interativa da API.
-
-
-## 🧭 Jornada do Projeto e Decisões Estratégicas
-
-Este projeto foi desenvolvido em duas grandes fases, refletindo a evolução de um protótipo local para um sistema de produção automatizado na nuvem.
-
-#### **Versão 1.0**
-A primeira etapa focou em provar a viabilidade do modelo. O trabalho incluiu:
-
-* **Análise Exploratória (EDA):** Utilizando Jupyter Notebooks para entender os dados, identificar problemas de qualidade e pivotar a estratégia de focar no dataset full.csv após descobrir inconsistências em outras fontes.
-* **Engenharia de Features:** Criação de features de "forma" (performance recente) e "contexto" (tática, rivalidade).
-* **Modelo e API Locais:** Treinamento de um modelo XGBoost e sua exposição através de uma API RESTful com FastAPI, tudo rodando em um ambiente local containerizado com Docker.
-
-Esta fase validou o modelo e a lógica de negócio, resultando em um serviço funcional, porém estático e com implantação manual.
-
-#### **Versão 2.0**
-
-A segunda fase elevou o projeto a um nível profissional, com o objetivo de criar um sistema dinâmico, resiliente e que se atualiza sozinho.
-
-* **Arquitetura Serverless:** O sistema foi redesenhado para a AWS, utilizando serviços gerenciados como App Runner, Fargate, S3 e IAM para criar uma infraestrutura escalável e de baixo custo.
-* **Modularização:** O código do notebook foi refatorado em scripts Python independentes e containerizados (data_processor.py, model_trainer.py), prontos para execução como jobs.
-* **Pipeline de Orquestração:** Foi implementada uma pipeline completa no AWS Step Functions que, em sequência, processa novos dados, retreina o modelo e comanda o deploy da API atualizada.
-* **Automação com Gatilhos:** O Amazon EventBridge foi configurado para "observar" o S3 e disparar toda a pipeline de retreinamento automaticamente quando novos dados chegam, eliminando qualquer intervenção manual.
-* **Entrega de Valor ao Usuário:** Uma interface amigável foi criada com Streamlit, conectando todo o poder do backend a um produto final simples e intuitivo para o usuário.
-
-Esta transição demonstra o ciclo de vida completo de um produto de dados, desde a concepção e prototipagem até a automação e manutenção em um ambiente de produção na nuvem.
-
-#### **O Caminho Final e Principais Aprendizados**
-A nova estratégia focou em extrair o máximo valor da fonte de dados mais confiável. Isso levou à criação de um sistema de features robusto, baseado em dois pilares: a **"forma"** recente das equipes (performance baseada em resultados) e o **"contexto"** do jogo (fatores táticos e circunstanciais).
-
-Esta jornada reforçou aprendizados cruciais:
-* **A qualidade dos dados supera a quantidade:** É melhor ter um modelo baseado em features consistentes e confiáveis do que um modelo baseado em dados "detalhados", mas de baixa qualidade.
-* **Adaptabilidade é chave:** A capacidade de pivotar uma estratégia com base nas evidências encontradas na fase de exploração é fundamental para o sucesso de um projeto de dados.
-* **Engenharia de Features é o coração do projeto:** O valor do modelo final foi derivado diretamente da habilidade de traduzir conceitos do futebol (forma, tática, rivalidade) em representações matemáticas que a IA pudesse entender.
-
-## 🔮 Próximos Passos
-
-* **Infraestrutura como Código (IaC):** Migrar a criação de todos os recursos da AWS (IAM Roles, Buckets, etc.) para uma ferramenta como Terraform ou AWS CDK para garantir a reprodutibilidade da infraestrutura.
-* **Testes Automatizados:** Expandir a pipeline de CI/CD para incluir testes de unidade e integração para a API e para os scripts de ML.
+Quase todos os erros documentados na seção "Solução de Problemas" do guia de implementação foram problemas reais encontrados durante a construção deste projeto. Se você encontrar um obstáculo diferente, não desista! A depuração na nuvem é uma habilidade fundamental. Use as ferramentas de log da AWS, consulte uma IA e, se encontrar algo novo, sinta-se à vontade para abrir uma *issue* ou me contatar. Sua contribuição pode enriquecer ainda mais este guia!
