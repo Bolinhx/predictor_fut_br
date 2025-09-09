@@ -31,7 +31,8 @@ Após a finalização da arquitetura V2.0, o projeto tomou um novo rumo: transfo
 
 ## 🏛️ Arquitetura da Solução
 
-_WIP diagrama da arquitetura_
+<img width="3840" height="1589" alt="Diagrama da arquitetura" src="https://github.com/user-attachments/assets/efad3c6d-b836-4233-b27b-b61831adbf8d" />
+
 
 ➡️ **[Acesse a Legenda Detalhada da Arquitetura aqui!](./ARCHITECTURE_LEGEND.md)**
 
