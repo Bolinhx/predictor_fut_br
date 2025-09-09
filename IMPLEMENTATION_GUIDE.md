@@ -81,6 +81,7 @@ Nesta fase, criamos os recursos de base que nosso sistema precisará para armaze
         Preencha com seu Access Key ID, Secret Access Key, uma região padrão (ex: us-east-1) e o formato de saída (json).
         ```
 
+#
 
 2. **S3 - Criando nosso Bucket de Armazenamento (nosso "Data Lake")**
    O Amazon S3 será o coração do nosso armazenamento, guardando os dados brutos, as features processadas e os modelos treinados.
@@ -106,7 +107,7 @@ Nesta fase, criamos os recursos de base que nosso sistema precisará para armaze
    <img width="2111" height="708" alt="S3 - Raiz" src="https://github.com/user-attachments/assets/11a625dc-de39-463a-a276-26fd0c7a6170" />
 
 
-
+#
 
 3. **ECR - Criando os Repositórios para as Imagens Docker**
 O Elastic Container Registry (ECR) é o nosso "Docker Hub" privado na AWS, onde guardaremos as imagens prontas para serem usadas pelo App Runner e Fargate.
@@ -161,6 +162,7 @@ Nesta fase, vamos colocar nosso código para rodar na nuvem pela primeira vez. O
         docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_URI_JOBS:latest
         ```
 
+#
 
 2. **Deploy da API no App Runner:**
     Com a imagem da API no ECR, vamos colocá-la no ar.
@@ -194,13 +196,14 @@ Nesta fase, vamos colocar nosso código para rodar na nuvem pela primeira vez. O
     *   Volte para a configuração do App Runner, atualize a lista e selecione a `AppRunnerInstanceRole` que você acabou de criar.
     5. Clique em **Create & deploy**.
 
-***🚨 Solução de Problemas Comuns no App Runner***
+### ***🚨 Solução de Problemas Comuns no App Runner***
 
 *   Erro` Failed to create...`: Geralmente é um problema de tempo ou memória.
-    *   `Health check failed:` A aplicação demorou muito para iniciar. Edite o serviço, vá em **Health check** e aumente os valores de Timeout (para `20s`) e Interval (para `25s`).
-    *   `Unable to locate credentials`: A **Instance role** não foi criada ou anexada corretamente. Verifique o passo 4.
+*   `Health check failed:` A aplicação demorou muito para iniciar. Edite o serviço, vá em **Health check** e aumente os valores de Timeout (para `20s`) e Interval (para `25s`).
+*   `Unable to locate credentials`: A **Instance role** não foi criada ou anexada corretamente. Verifique o passo 4.
 
 
+# 
 
 3. **Execução Manual dos Jobs no Fargate:**
    Vamos validar que nossos scripts de processamento e treinamento rodam na nuvem.
@@ -211,7 +214,7 @@ Nesta fase, vamos colocar nosso código para rodar na nuvem pela primeira vez. O
     *   **Trusted entity:** `AWS service` -> **Use case**: `Elastic Container Service Task`.
     *   **Permissions**: Anexe as políticas `AmazonS3FullAccess` e `AWSAppRunnerFullAccess`.
     *   **Role name:** `ECSTaskS3AppRunnerRole.`
-    2. **Crie a Definição da Tarefa (Task Definition)**:
+    1. **Crie a Definição da Tarefa (Task Definition)**:
 *   **Vá para Amazon ECS -> Task Definitions -> Create new task definition.**
 *   **Task definition family**: `ml-job-task-family`.
 *   **Launch type:** `AWS Fargate`.
@@ -221,7 +224,7 @@ Nesta fase, vamos colocar nosso código para rodar na nuvem pela primeira vez. O
     *   **Name:** `ml-jobs-container`.
     *   **Image URI:** Cole a URI da sua imagem `ml-jobs` do ECR.
 *   Clique em **Create**.
-    3. **Execute a Tarefa Manualmente:**
+    1. **Execute a Tarefa Manualmente:**
 *   Vá para **Amazon ECS** -> Clusters e selecione o cluster `default` (ou crie um novo do tipo "Networking only" se não existir).
 *   Clique na aba **Tasks -> Run new task.**
 *   Launch type: `FARGATE`.
@@ -236,13 +239,13 @@ Nesta fase, vamos colocar nosso código para rodar na nuvem pela primeira vez. O
 
 Se correr tudo bem, na pasta `processed` do seu bucket vai ter um arquivo com nome `features.parquet`
 
-***🚨 Solução de Problemas Comuns no Fargate***
+### ***🚨 Solução de Problemas Comuns no Fargate***
 
-*   **Erro** `iam:PassRole`: O serviço que está executando a tarefa (Step Functions, no futuro) precisa de permissão para "entregar" a `Task Role` à tarefa.
-*   **Erro** `PermissionError`: `Forbidden`: A `Task Role` (`ECSTaskS3AppRunnerRole`) não tem a permissão necessária (ex: `AmazonS3FullAccess`).
-*   **Erro** `FileNotFoundError`: `fsspec`: A imagem Docker está sem as bibliotecas `fsspec` e `s3fs`. Adicione-as ao `ml_jobs/requirements-jobs.txt`.
+*   **Erro** `iam:PassRole`: O serviço que está executando a tarefa (Step Functions, no futuro)precisa     de permissão para "entregar" a `Task Role` à tarefa.
+*   **Erro** `PermissionError`: `Forbidden`: A `Task Role` (`ECSTaskS3AppRunnerRole`) não tem a    permissão necessária (ex: `AmazonS3FullAccess`).
+*   **Erro** `FileNotFoundError`: `fsspec`: A imagem Docker está sem as bibliotecas `fsspec` e`s3fs`.  Adicione-as ao `ml_jobs/requirements-jobs.txt`.
 
-
+# 
 
 
 ## 🤖 Fase 3: Automação com a Pipeline MLOps
