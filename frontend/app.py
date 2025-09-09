@@ -50,7 +50,6 @@ def extrair_partes_formacao(formacao):
         return [4, 4, 2]
 
 def gerar_features_para_confronto(df_historico, time_mandante, time_visitante):
-    # ... (parte inicial da função continua a mesma)
     ultimos_jogos_mandante = df_historico[
         (df_historico['mandante'] == time_mandante) | (df_historico['visitante'] == time_mandante)
     ].sort_values(by='data', ascending=False).head(5)
