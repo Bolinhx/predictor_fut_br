@@ -80,6 +80,26 @@ Este projeto fornece experiência prática em conceitos cobrados em todos os dom
 
 ---
 
+## 💡 Dicas Importantes para o Sucesso
+
+Antes de mergulhar na implementação, leia estas dicas. Elas foram aprendidas durante a construção deste projeto e podem economizar muito tempo e frustração.
+
+* **Foco na Nuvem, não no Machine Learning!**
+    Mesmo que seu objetivo não seja aprender Machine Learning, este projeto é um excelente exercício de AWS. As práticas de automação, orquestração com Step Functions, deploy de contêineres e gerenciamento de permissões com IAM são universais e se aplicam a quase qualquer área de desenvolvimento na nuvem. Você não precisa entender a lógica por trás do modelo para implementar a arquitetura com sucesso.
+
+* **Um Passo de Cada Vez.**
+    A tentação de construir tudo de uma vez é grande, mas a chave para o sucesso na nuvem é a iteração. Siga o guia fase por fase. Após cada etapa importante (ex: criar uma IAM Role, subir uma imagem Docker), **teste e valide** que aquele componente está funcionando antes de seguir para o próximo. Isso torna a depuração infinitamente mais fácil.
+
+* **Abrace a Depuração.**
+    Você vai encontrar erros. Permissões que faltam, nomes incorretos, timeouts. Isso não é um sinal de falha, mas sim a **parte mais importante do aprendizado**. Use os logs da AWS (CloudWatch, os logs de deploy do App Runner, os logs da tarefa no ECS) como suas ferramentas de detetive. Cada erro resolvido é um conhecimento consolidado.
+
+* **⚠️ Gerenciamento de Custos é SUA Responsabilidade!**
+    Este projeto foi projetado para ter um custo próximo de zero se for implementado em um curto período e os recursos forem devidamente limpos depois. O autor original, por exemplo, implementou tudo em um domingo sem incorrer em custos significativos. No entanto, **não deixe os serviços rodando indefinidamente**, pois isso **VAI** gerar custos inesperados.
+    * **PAUSE O APP RUNNER:** Sempre que não estiver usando ativamente a API, vá ao console do App Runner e **pause** o serviço.
+    * **LIMPE TUDO:** Ao finalizar os estudos, siga rigorosamente a **Fase 5** do guia de implementação para deletar todos os recursos. O autor deste guia não se responsabiliza por quaisquer cobranças geradas na sua conta AWS.
+
+---
+
 ## 🚀 Como Começar
 
 Tudo o que você precisa para colocar a mão na massa está no nosso manual detalhado.
