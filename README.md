@@ -34,7 +34,7 @@ Após a finalização da arquitetura V2.0, o projeto tomou um novo rumo: transfo
 ![predictor_archtecture](https://github.com/user-attachments/assets/97ba478b-c136-4adc-9107-701c1dc780ae)
 
 
-➡️ **[Acesse a Legenda Detalhada da Arquitetura aqui!](./ARCHITECTURE_LEGEND.md)**
+➡️ **[Acesse a Legenda Detalhada da Arquitetura aqui!](./LEGENDA_ARQUITETURA.md)**
 
 ---
 
